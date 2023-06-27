@@ -1,0 +1,362 @@
+<?xml version="1.0" ?>
+<!-- Reference from https://classic.gazebosim.org/tutorials?tut=guided_i1&cat= -->
+<sdf version="1.5">
+  <world name="default">
+
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <model name="cylinderRobot">
+      <!-- Give the base link a unique name -->
+      <link name="base">
+        <!-- Offset the base by half the lenght of the cylinder -->
+        <pose>0 0 0.029335 0 0 0</pose>
+        <collision name="base_collision">
+          <geometry>
+            <cylinder>
+              <!-- Radius and length provided by Velodyne -->
+              <radius>.04267</radius>
+              <length>.05867</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <inertial>
+          <mass>1.2</mass>
+          <inertia>
+            <ixx>0.001087473</ixx>
+            <iyy>0.001087473</iyy>
+            <izz>0.001092437</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <!-- The visual is mostly a copy of the collision -->
+        <visual name="base_visual">
+          <geometry>
+            <cylinder>
+              <radius>.04267</radius>
+              <length>.05867</length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- Give the base link a unique name -->
+      <link name="top">
+
+        <!-- Vertically offset the top cylinder by the length of the bottom
+            cylinder and half the length of this cylinder. -->
+        <pose>0 0 0.095455 0 0 0</pose>
+        <collision name="top_collision">
+          <geometry>
+            <cylinder>
+              <!-- Radius and length provided by Velodyne -->
+              <radius>0.04267</radius>
+              <length>0.07357</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000090623</ixx>
+            <iyy>0.000090623</iyy>
+            <izz>0.000091036</izz>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <!-- The visual is mostly a copy of the collision -->
+        <visual name="top_visual">
+          <geometry>
+            <cylinder>
+              <radius>0.04267</radius>
+              <length>0.07357</length>
+            </cylinder>
+          </geometry>
+        </visual>
+        <!-- Add a ray sensor, and give it a name -->
+        <sensor type="ray" name="sensor">
+
+          <!-- Position the ray sensor based on the specification. Also rotate
+              it by 90 degrees around the X-axis so that the <horizontal> rays
+              become vertical -->
+          <pose>0 0 0.03779 0 0 0</pose>
+
+          <!-- Enable visualization to see the rays in the GUI -->
+          <visualize>true</visualize>
+
+          <!-- Set the update rate of the sensor -->
+          <update_rate>10</update_rate>
+          <always_on>true</always_on>
+          <ray>
+	          <noise>
+              <type>gaussian</type>
+              <mean>0</mean>
+              <stddev>0.02</stddev>
+            </noise>
+            <!-- The scan element contains the horizontal and vertical beams.
+                We are leaving out the vertical beams for this tutorial. -->
+            <scan>
+
+              <!-- The horizontal beams -->
+              <horizontal>
+                <!-- The velodyne has 32 beams(samples) -->
+                <samples>2</samples>
+
+                <!-- Resolution is multiplied by samples to determine number of
+                    simulated beams vs interpolated beams. See:
+                    http://sdformat.org/spec?ver=1.6&elem=sensor#horizontal_resolution
+                    -->
+                <resolution>1</resolution>
+
+                <!-- Minimum angle in radians -->
+                <min_angle>0</min_angle>
+
+                <!-- Maximum angle in radians -->
+                <max_angle>1.570796</max_angle>
+              </horizontal>
+            </scan>
+
+            <!-- Range defines characteristics of an individual beam -->
+            <range>
+
+              <!-- Minimum distance of the beam -->
+              <min>0.00</min>
+
+              <!-- Maximum distance of the beam -->
+              <max>70</max>
+
+              <!-- Linear resolution of the beam -->
+              <resolution>0.001</resolution>
+            </range>
+          </ray>
+          <plugin name="gazebo_ros_ray_controller" filename="libgazebo_ros_laser.so">
+            <topicName>/robot/observe</topicName>
+            <frameName>ray_sensor</frameName>
+          </plugin>
+        </sensor>
+      </link>
+      <!-- Each joint must have a unique name -->
+      <joint type="revolute" name="joint">
+
+        <!-- Position the joint at the bottom of the top link -->
+        <pose>0 0 -0.036785 0 0 0</pose>
+
+        <!-- Use the base link as the parent of the joint -->
+        <parent>base</parent>
+
+        <!-- Use the top link as the child of the joint -->
+        <child>top</child>
+
+        <!-- The axis defines the joint's degree of freedom -->
+        <axis>
+
+          <!-- Revolve around the z-axis -->
+          <xyz>0 0 1</xyz>
+
+          <!-- Limit refers to the range of motion of the joint -->
+          <limit>
+
+            <!-- Use a very large number to indicate a continuous revolution -->
+            <lower>-10000000000000000</lower>
+            <upper>10000000000000000</upper>
+          </limit>
+        </axis>
+      </joint>
+    </model>
+    <model name='myroom10'>
+      <pose frame=''>3.01187 0.9 0 0 -0 0</pose>
+      <link name='Wall_10'>
+        <collision name='Wall_10_Collision'>
+          <geometry>
+            <box>
+              <size>10.4 0.2 2.5</size>
+            </box>
+          </geometry>
+          <pose frame=''>0 0 1.25 0 -0 0</pose>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Wall_10_Visual'>
+          <pose frame=''>0 0 1.25 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>10.4 0.2 2.5</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Bricks</name>
+            </script>
+            <ambient>1 1 1 1</ambient>
+          </material>
+          <meta>
+            <layer>0</layer>
+          </meta>
+        </visual>
+        <pose frame=''>-8.11187 -0.9 0 0 -0 1.5708</pose>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <link name='Wall_12'>
+        <collision name='Wall_12_Collision'>
+          <geometry>
+            <box>
+              <size>10.4 0.2 2.5</size>
+            </box>
+          </geometry>
+          <pose frame=''>0 0 1.25 0 -0 0</pose>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Wall_12_Visual'>
+          <pose frame=''>0 0 1.25 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>10.4 0.2 2.5</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Bricks</name>
+            </script>
+            <ambient>1 1 1 1</ambient>
+          </material>
+          <meta>
+            <layer>0</layer>
+          </meta>
+        </visual>
+        <pose frame=''>-3.01187 -6 0 0 -0 0</pose>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <link name='Wall_15'>
+        <collision name='Wall_15_Collision'>
+          <geometry>
+            <box>
+              <size>13.6164 0.2 2.5</size>
+            </box>
+          </geometry>
+          <pose frame=''>0 0 1.25 0 -0 0</pose>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Wall_15_Visual'>
+          <pose frame=''>0 0 1.25 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>13.6164 0.2 2.5</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Bricks</name>
+            </script>
+            <ambient>1 1 1 1</ambient>
+          </material>
+          <meta>
+            <layer>0</layer>
+          </meta>
+        </visual>
+        <pose frame=''>5.08813 -0 0 0 -0 1.10715</pose>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <link name='Wall_19'>
+        <collision name='Wall_19_Collision'>
+          <geometry>
+            <box>
+              <size>16.4997 0.2 2.5</size>
+            </box>
+          </geometry>
+          <pose frame=''>0 0 1.25 0 -0 0</pose>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Wall_19_Visual'>
+          <pose frame=''>0 0 1.25 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>16.4997 0.2 2.5</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Bricks</name>
+            </script>
+            <ambient>1 1 1 1</ambient>
+          </material>
+          <meta>
+            <layer>0</layer>
+          </meta>
+        </visual>
+        <pose frame=''>-0.011866 5.1 0 0 -0 0.110657</pose>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <static>1</static>
+    </model>
+
+  </world>
+</sdf>
